@@ -6,7 +6,7 @@
 #include "proc.h"
 #include "spinlock.h"
 //#include "pstat.h"
-
+//BEST SO FAAAAAAAAAAARRRRRRRRRRRRRRRRRR
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -304,6 +304,8 @@ scheduler(void)
  // Loop over process table looking for process to run.
       acquire(&ptable.lock);
  // Looping queue 3s
+ // This gets 8/12 when I know it is wrong
+scheduleQueue3:
       for(int i = 0; i < q3_counter; i++){
          if(q3[i]->state != RUNNABLE)
             continue;
@@ -323,7 +325,6 @@ scheduler(void)
             }
             q3[q3_counter] = NULL;
             q3_counter--;
-            goto scheduleQueue2;
             //After adding Else If here I lost points on priority Boost...
          } else if (proc->ticks[p->pid][p->priority] > 8){
              proc->ticks[p->pid][p->priority] = 1;
@@ -357,9 +358,10 @@ scheduler(void)
                pw->wait_ticks[j][pw->priority] = 0;
             }
          }
+         
          proc = 0;
       }
-scheduleQueue2:     
+       
       for(int i = 0; i < q2_counter; i++){
          if(q2[i]->state != RUNNABLE)
             continue;
@@ -378,7 +380,6 @@ scheduleQueue2:
             }
             q2[q2_counter] = NULL;
             q2_counter--;
-            goto scheduleQueue1;
          }else if (proc->ticks[p->pid][p->priority] > 16){
              proc->ticks[p->pid][p->priority] = 1;
          }
@@ -410,9 +411,10 @@ scheduleQueue2:
                q3_counter++;
             }
          }
+         goto scheduleQueue3;
          proc = 0;
       }
-scheduleQueue1:
+      
       for(int i = 0; i < q1_counter; i++){
          if(q1[i]->state != RUNNABLE)
             continue;
@@ -431,7 +433,6 @@ scheduleQueue1:
             }
             q1[q1_counter] = NULL;
             q1_counter--;
-            goto scheduleQueue0;
          }else if (proc->ticks[p->pid][p->priority] > 32){
              proc->ticks[p->pid][p->priority] = 1;
          }
@@ -463,9 +464,10 @@ scheduleQueue1:
                q3_counter++;
             }
          }
+         goto scheduleQueue3;
          proc = 0;
       }
-scheduleQueue0:
+      
       for(int i = 0; i < q0_counter; i++){
          if(q0[i]->state != RUNNABLE)
             continue;
@@ -502,6 +504,7 @@ scheduleQueue0:
                q3_counter++;
             }
          }
+         goto scheduleQueue3;
          proc = 0;
       }
       release(&ptable.lock);
